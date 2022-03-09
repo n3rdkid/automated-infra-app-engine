@@ -9,7 +9,7 @@ resource "google_app_engine_standard_app_version" "default_service" {
   service    = "default"
   runtime    = "nodejs14"
   entrypoint {
-    shell = "node ./app.js"
+    shell = "npm start"
   }
   deployment {
     zip {
