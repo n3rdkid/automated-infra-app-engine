@@ -42,7 +42,7 @@ resource "google_app_engine_standard_app_version" "default_service" {
 }
 
 resource "google_app_engine_standard_app_version" "front_service" {
-  version_id = "v1"
+  version_id = "front-service-v1"
   service    = "front"
   runtime    = "nodejs14"
   entrypoint {
