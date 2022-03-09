@@ -3,6 +3,11 @@ variable "app_engine_initialized" {
   type        = bool
   description = "Has App engine been initialized once"
 }
+
+variable "default_service_source" {
+  type        = string
+  description = "Name of the bucket that contains source zip for default service"
+}
 variable "project_id" {
   type        = string
   description = "GCP project id"
