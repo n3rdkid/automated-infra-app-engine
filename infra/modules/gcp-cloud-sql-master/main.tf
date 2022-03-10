@@ -1,0 +1,37 @@
+resource "random_id" "random_name" {
+  byte_length = 2
+}
+resource "google_sql_database_instance" "master" {
+  # After a name is used, it cannot be reused for up to one week.
+  name                 = "master-instance-${random_id.random_name.hex}"
+  # Cloud SQL is not available in all regions
+  region               = var.database_instance_region
+  database_version     = var.database_version
+
+  master_instance_name = var.master_instance_name
+  # Manually update deletion protection to prevent accidental deletion
+  deletion_protection=true
+  settings {
+    tier                        = var.tier
+    # When the instance should be active
+    activation_policy           = var.activation_policy
+    # authorized_gae_applications = var.authorized_gae_applications
+    dynamic "backup_configuration" {
+      for_each = [var.backup_configuration]
+      content {
+
+        binary_log_enabled = lookup(backup_configuration.value, "binary_log_enabled", null)
+        enabled            = lookup(backup_configuration.value, "enabled", null)
+        start_time         = lookup(backup_configuration.value, "start_time", null)
+      }
+    }
+
+    disk_size        = var.disk_size
+    disk_type        = var.disk_type
+  }
+
+  timeouts {
+    create = "60m"
+    delete = "2h"
+  }
+}

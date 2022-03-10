@@ -8,7 +8,7 @@ variable "default_service_source" {
   type        = string
   description = "Name of the bucket that contains source zip for default service"
 }
-variable "project_id" {
+variable "project" {
   type        = string
   description = "GCP project id"
 }

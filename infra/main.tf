@@ -1,11 +1,11 @@
 resource "google_app_engine_application" "app" {
   count       = var.app_engine_initialized ? 0 : 1
-  project     = var.project_id
+  project     = var.project
   location_id = var.app_engine_region
 }
 
 resource "google_storage_bucket" "static_content_bucket" {
-  name                        = "${var.project_id}-appengine-static-content"
+  name                        = "${var.project}-appengine-static-content"
   location                    = "ASIA-SOUTH1"
   force_destroy               = true
   uniform_bucket_level_access = true
@@ -64,4 +64,8 @@ resource "google_app_engine_standard_app_version" "front_service" {
   }
   instance_class            = "F1"
   delete_service_on_destroy = true
+}
+
+module "cloud_sql_master" {
+  source = "./modules/gcp-cloud-sql-master"
 }
