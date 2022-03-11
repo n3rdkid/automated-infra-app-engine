@@ -5,7 +5,7 @@ variable "database_instance_region" {
 
 variable "database_version" {
   description = "The version of of the database. For example, `MYSQL_5_6` or `POSTGRES_9_6`."
-  default     = "MYSQL_8"
+  default     = "MYSQL_8_0"
 }
 
 variable "master_instance_name" {
@@ -25,12 +25,12 @@ variable "db_name" {
 
 variable "db_charset" {
   description = "The charset for the default database"
-  default     = ""
+  default     = "utf8mb4"
 }
 
 variable "db_collation" {
   description = "The collation for the default database. Example for MySQL databases: 'utf8_general_ci', and Postgres: 'en_US.UTF8'"
-  default     = ""
+  default     = "utf8mb4_general_ci"
 }
 
 variable "user_name" {
@@ -70,7 +70,10 @@ variable "disk_type" {
 
 variable "backup_configuration" {
   description = "The backup_configuration settings subblock for the database setings"
-  default     = {}
+  default     = {
+    binary_log_enabled = true
+    enabled=true
+  }
 }
 
 
