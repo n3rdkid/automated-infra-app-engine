@@ -32,6 +32,7 @@ resource "google_sql_database_instance" "master" {
 }
 
 resource "google_sql_database" "default" {
+  count=   var.sql_import ? 0 : 1
   name      = var.db_name
   instance  = google_sql_database_instance.master.name
   charset   = var.db_charset
@@ -42,9 +43,36 @@ resource "random_id" "user_password" {
   byte_length = 8
 }
 resource "google_sql_user" "default" {
-  # count    = var.master_instance_name == "" ? 1 : 0
   name     = var.user_name
   instance = google_sql_database_instance.master.name
   host     = var.user_host
   password = var.user_password == "" ? random_id.user_password.hex : var.user_password
+}
+
+resource "null_resource" "sql_import" {
+  count=   var.sql_import ? 1 : 0
+  provisioner "local-exec" {
+    when    = create
+    command = <<-EOT
+      echo Importing SQL from the source bucket
+      gcloud sql import sql ${google_sql_database_instance.master.name} gs://${var.sql_dumb_bucket}/sql_dump.sql.gz --project=${var.project} --quiet
+    EOT
+  }
+}
+
+resource "null_resource" "sql_export" { 
+  triggers={
+    cloud_sql_uri=google_sql_database_instance.master.name
+    sql_dumb_bucket=var.sql_dumb_bucket
+    db_name=var.db_name
+    project=var.project
+  }
+  provisioner "local-exec" {
+    when = destroy
+    command = <<EOT
+      echo Exporting SQL to backup bucket
+      gcloud sql export sql ${self.triggers.cloud_sql_uri} gs://${self.triggers.sql_dumb_bucket}/sql_dump.sql.gz --database=${self.triggers.db_name} --project=${self.triggers.project}
+    EOT
+  }
+  
 }

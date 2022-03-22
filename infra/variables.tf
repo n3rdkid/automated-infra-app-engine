@@ -20,3 +20,12 @@ variable "credentials" {
   type        = string
   description = "Path to GCP serviceAccountKey.json"
 }
+variable "sql_import" {
+  type        = bool
+  description = "Should we import during creation"
+}
+
+variable "sql_dumb_bucket" {
+  type        = string
+  description = "Name of the bucket where sql is dumped"
+}

@@ -20,7 +20,7 @@ variable "tier" {
 
 variable "db_name" {
   description = "Name of the default database to create"
-  default     = "default"
+  default     = "default_db"
 }
 
 variable "db_charset" {
@@ -35,7 +35,7 @@ variable "db_collation" {
 
 variable "user_name" {
   description = "The name of the default user"
-  default     = "default"
+  default     = "admin"
 }
 
 variable "user_host" {
@@ -45,7 +45,7 @@ variable "user_host" {
 
 variable "user_password" {
   description = "The password for the default user. If not set, a random one will be generated and available in the generated_user_password output variable."
-  default     = ""
+  default     = "12345678"
 }
 
 variable "activation_policy" {
@@ -75,5 +75,17 @@ variable "backup_configuration" {
     enabled=true
   }
 }
+variable "sql_import" {
+  type        = bool
+  description = "Should we import during creation"
+}
 
+variable "sql_dumb_bucket" {
+  type        = string
+  description = "Name of the bucket where sql is dumped"
+}
 
+variable "project" {
+  type        = string
+  description = "GCP project id"
+}
