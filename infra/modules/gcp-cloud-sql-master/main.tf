@@ -55,15 +55,15 @@ resource "null_resource" "sql_import" {
     when    = create
     command = <<-EOT
       echo Importing SQL from the source bucket
-      gcloud sql import sql ${google_sql_database_instance.master.name} gs://${var.sql_dumb_bucket}/sql_dump.sql.gz --project=${var.project} --quiet
+      gcloud sql import sql ${google_sql_database_instance.master.uri} gs://${var.sql_dump_bucket}/sql_dump.sql.gz --project=${var.project} --quiet
     EOT
   }
 }
 
 resource "null_resource" "sql_export" { 
   triggers={
-    cloud_sql_uri=google_sql_database_instance.master.name
-    sql_dumb_bucket=var.sql_dumb_bucket
+    cloud_sql_uri=google_sql_database_instance.master.uri
+    sql_dump_bucket=var.sql_dump_bucket
     db_name=var.db_name
     project=var.project
   }
@@ -71,8 +71,14 @@ resource "null_resource" "sql_export" {
     when = destroy
     command = <<EOT
       echo Exporting SQL to backup bucket
-      gcloud sql export sql ${self.triggers.cloud_sql_uri} gs://${self.triggers.sql_dumb_bucket}/sql_dump.sql.gz --database=${self.triggers.db_name} --project=${self.triggers.project}
+      gcloud sql export sql ${self.triggers.cloud_sql_uri} gs://${self.triggers.sql_dump_bucket}/sql_dump.sql.gz --database=${self.triggers.db_name} --project=${self.triggers.project}
     EOT
   }
   
+}
+
+resource "google_storage_bucket_iam_member" "admin" {
+  bucket = var.sql_dump_bucket
+  role   = "roles/storage.admin"
+  member = "serviceAccount:${google_sql_database_instance.master.service_account_email_address}"
 }
