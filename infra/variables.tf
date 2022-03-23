@@ -25,7 +25,7 @@ variable "sql_import" {
   description = "Should we import during creation"
 }
 
-variable "sql_dumb_bucket" {
+variable "sql_dump_bucket" {
   type        = string
   description = "Name of the bucket where sql is dumped"
 }
