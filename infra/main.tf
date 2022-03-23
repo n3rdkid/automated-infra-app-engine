@@ -69,7 +69,7 @@
 module "cloud_sql_master" {
   source          = "./modules/gcp-cloud-sql-master"
   sql_import      = var.sql_import
-  sql_dumb_bucket = var.sql_dumb_bucket
+  sql_dump_bucket = var.sql_dump_bucket
   project = var.project
 }
 
