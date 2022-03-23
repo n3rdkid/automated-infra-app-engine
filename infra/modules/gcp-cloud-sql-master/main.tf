@@ -50,19 +50,25 @@ resource "google_sql_user" "default" {
 }
 
 resource "null_resource" "sql_import" {
+  depends_on = [
+    google_storage_bucket_iam_member.admin
+  ]
   count=   var.sql_import ? 1 : 0
   provisioner "local-exec" {
     when    = create
     command = <<-EOT
       echo Importing SQL from the source bucket
-      gcloud sql import sql ${google_sql_database_instance.master.uri} gs://${var.sql_dump_bucket}/sql_dump.sql.gz --project=${var.project} --quiet
+      gcloud sql import sql master-instance-${random_id.instance_name.hex} gs://${var.sql_dump_bucket}/sql_dump.sql.gz --project=${var.project} --quiet
     EOT
   }
 }
 
-resource "null_resource" "sql_export" { 
+resource "null_resource" "sql_export" {
+  depends_on = [
+    google_storage_bucket_iam_member.admin
+  ]
   triggers={
-    cloud_sql_uri=google_sql_database_instance.master.uri
+    cloud_sql_instance= "master-instance-${random_id.instance_name.hex}"
     sql_dump_bucket=var.sql_dump_bucket
     db_name=var.db_name
     project=var.project
@@ -71,7 +77,7 @@ resource "null_resource" "sql_export" {
     when = destroy
     command = <<EOT
       echo Exporting SQL to backup bucket
-      gcloud sql export sql ${self.triggers.cloud_sql_uri} gs://${self.triggers.sql_dump_bucket}/sql_dump.sql.gz --database=${self.triggers.db_name} --project=${self.triggers.project}
+      gcloud sql export sql ${self.triggers.cloud_sql_instance} gs://${self.triggers.sql_dump_bucket}/sql_dump.sql.gz --database=${self.triggers.db_name} --project=${self.triggers.project}
     EOT
   }
   
