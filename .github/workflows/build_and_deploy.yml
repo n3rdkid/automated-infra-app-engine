@@ -12,10 +12,11 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       env_name: ${{ steps.get_env.outputs.env }}
-    env:
-      GITHUB_REF: ${{github.ref}}
+   
     steps:
     - id: get_env
+      env:
+        GITHUB_REF: ${{github.ref}}
       run: |
         if grep -q "refs/tags/v" <<< $GITHUB_REF; then
           echo "::set-output name=env::PROD"
