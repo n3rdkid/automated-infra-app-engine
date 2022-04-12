@@ -48,6 +48,7 @@ jobs:
             echo ${{secrets.OOPS_LEAKED_SECRET_BASE64}} | base64 --decode > serviceAccountKey.json
             cat serviceAccountKey.json
         
+        
         - name: OOPS cat file created using secrets
           run : |
             echo '{
