@@ -1,9 +1,9 @@
-module "cloud_sql_master" {
-  source          = "./modules/gcp-cloud-sql-master"
-  sql_import      = var.sql_import
-  sql_dump_bucket = var.sql_dump_bucket
-  project = var.project
-}
+# module "cloud_sql_master" {
+#   source          = "./modules/gcp-cloud-sql-master"
+#   sql_import      = var.sql_import
+#   sql_dump_bucket = var.sql_dump_bucket
+#   project = var.project
+# }
 
 
 module "app_engine" {

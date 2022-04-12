@@ -71,20 +71,20 @@ jobs:
               [
                 {
                   "color": "good",
-                  "author_name": "$AUTHOR",
-                  "author_icon": "$AUTHOR_ICON",
+                  "author_name": $AUTHOR,
+                  "author_icon": $AUTHOR_ICON,
                   "fields": [
                     {
                       "title": "Commit Message",
-                      "value": "$COMMIT_MESSAGE"
+                      "value": $COMMIT_MESSAGE
                     },
                     {
                       "title": "GitHub Actions URL",
-                      "value": "$GITHUB_ACTIONS_URL"
+                      "value": $GITHUB_ACTIONS_URL
                     },
                     {
                       "title": "Compare URL",
-                      "value": "$COMPARE_URL"
+                      "value": $COMPARE_URL
                     }
                   ]
                 }
