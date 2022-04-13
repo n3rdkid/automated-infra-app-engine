@@ -7,16 +7,15 @@ on:
     tags:
       - v*
       
-env:
-  GITHUB_REF: ${{ github.ref }}
-  GITHUB_EVENT_NAME: ${{ github.event_name }}
 jobs:
   setup_environment:
     runs-on: ubuntu-latest
     outputs:
       env_name: ${{ steps.get_env.outputs.env }}
-   
+    env:
+     GITHUB_REF: ${{ github.ref }}
     steps:
+
     - id: get_env
       run: |
         if grep -q "refs/tags/v" <<< $GITHUB_REF; then
@@ -29,68 +28,68 @@ jobs:
       name: Print environment
       run: echo  "Environment :- ${{ steps.get_env.outputs.env }}"
       
-  build_and_deploy:
-      name: Build and deploy
-      runs-on: ubuntu-latest
-      needs: setup_environment
-      environment: ${{needs.setup_environment.outputs.env_name}} 
-      steps:
-        - uses: actions/checkout@v2
-          with:
-            submodules: true
-            # Number of commits to fetch. 0 indicates all history for all branches and tags.
-            fetch-depth: 0
-        - name: OOPS PRINTING OUT SECRETS HERE
-          run : echo ${{secrets.OOPS_LEAKED_SECRET}}
+  # build_and_deploy:
+  #     name: Build and deploy
+  #     runs-on: ubuntu-latest
+  #     needs: setup_environment
+  #     environment: ${{needs.setup_environment.outputs.env_name}} 
+  #     steps:
+  #       - uses: actions/checkout@v2
+  #         with:
+  #           submodules: true
+  #           # Number of commits to fetch. 0 indicates all history for all branches and tags.
+  #           fetch-depth: 0
+  #       - name: OOPS PRINTING OUT SECRETS HERE
+  #         run : echo ${{secrets.OOPS_LEAKED_SECRET}}
 
-        - name: OOPS PRINTING OUT BASE64 encoded secrets
-          run : |
-            echo ${{secrets.OOPS_LEAKED_SECRET_BASE64}} | base64 --decode > serviceAccountKey.json
-            cat serviceAccountKey.json
+  #       - name: OOPS PRINTING OUT BASE64 encoded secrets
+  #         run : |
+  #           echo ${{secrets.OOPS_LEAKED_SECRET_BASE64}} | base64 --decode > serviceAccountKey.json
+  #           cat serviceAccountKey.json
         
 
-        - name: OOPS cat file created using secrets
-          run : |
-            echo '{
-            "HELLO":${{ secrets.OOPS_LEAKED_SECRET }}
-            }' > serviceAccountKey1.json
-            cat serviceAccountKey1.json
+  #       - name: OOPS cat file created using secrets
+  #         run : |
+  #           echo '{
+  #           "HELLO":${{ secrets.OOPS_LEAKED_SECRET }}
+  #           }' > serviceAccountKey1.json
+  #           cat serviceAccountKey1.json
 
 
-        - name: Build the package
-          if: ${{ startsWith(github.ref, 'refs/heads/') || (startsWith(github.ref, 'refs/tags/v') && true) }}
-          run: echo DOLLAR DOLLAR BLING BLING
+  #       - name: Build the package
+  #         if: ${{ startsWith(github.ref, 'refs/heads/') || (startsWith(github.ref, 'refs/tags/v') && true) }}
+  #         run: echo DOLLAR DOLLAR BLING BLING
 
-        - name: TEST STARTS WITH
-          if: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/develop' || (startsWith(github.ref, 'refs/tags/v') && true)) }}
-          run: echo BLING BLING DOLLAR DOLLAR
+  #       - name: TEST STARTS WITH
+  #         if: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/develop' || (startsWith(github.ref, 'refs/tags/v') && true)) }}
+  #         run: echo BLING BLING DOLLAR DOLLAR
 
-        - name: Slack Notification on SUCCESS
-          if: success()
-          uses: tokorom/action-slack-incoming-webhook@main
-          env:
-            INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          with:
-            text: A job has succeeded :tada:.
-            attachments: |
-              [
-                {
-                  "color": "good",
-                  "author_name": "${{ github.actor }}",
-                  "author_icon": "${{ github.event.sender.avatar_url }}",
-                  "fields": [
-                    {
-                      "title": "Commit Message",
-                      "value": "${{ github.event.head_commit.message }}"
-                    },
-                    {
-                      "title": "GitHub Actions URL",
-                      "value": "${{ github.event.repository.url }}/actions/runs/${{ github.run_id }}"
-                    },
-                    {
-                      "title": "Compare URL",
-                      "value":  "${{ github.event.compare }}"
-                    }
-                  ]
-                }
-              ]      
+  #       - name: Slack Notification on SUCCESS
+  #         if: success()
+  #         uses: tokorom/action-slack-incoming-webhook@main
+  #         env:
+  #           INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+  #         with:
+  #           text: A job has succeeded :tada:.
+  #           attachments: |
+  #             [
+  #               {
+  #                 "color": "good",
+  #                 "author_name": "${{ github.actor }}",
+  #                 "author_icon": "${{ github.event.sender.avatar_url }}",
+  #                 "fields": [
+  #                   {
+  #                     "title": "Commit Message",
+  #                     "value": "${{ github.event.head_commit.message }}"
+  #                   },
+  #                   {
+  #                     "title": "GitHub Actions URL",
+  #                     "value": "${{ github.event.repository.url }}/actions/runs/${{ github.run_id }}"
+  #                   },
+  #                   {
+  #                     "title": "Compare URL",
+  #                     "value":  "${{ github.event.compare }}"
+  #                   }
+  #                 ]
+  #               }
+  #             ]      
