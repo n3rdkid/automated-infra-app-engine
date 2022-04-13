@@ -58,11 +58,11 @@ jobs:
 
 
         - name: Build the package
-          if: startsWith( github.ref, 'refs/heads/') || startsWith(github.ref, 'refs/tags/v')) && true) 
+          if: ${{ startsWith(github.ref, 'refs/heads/') || (startsWith(github.ref, 'refs/tags/v') && true) }}
           run: echo DOLLAR DOLLAR BLING BLING
 
         - name: TEST STARTS WITH
-          if:  $GITHUB_EVENT_NAME == 'push' && ($GITHUB_REF == 'refs/heads/main' || (startsWith(github.ref, 'refs/tags/v') && true))
+          if: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/develop' || (startsWith(github.ref, 'refs/tags/v') && true)) }}
           run: echo BLING BLING DOLLAR DOLLAR
 
         - name: Slack Notification on SUCCESS
